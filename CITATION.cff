@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this code or the split assignments, please cite the associated article."
+title: "Code, data splits and configurations for: Integrating physicochemical properties into an augmented 3D molecular learning framework for taste prediction"
+authors:
+  - family-names: "Shin"
+    given-names: "H.-M."   # TODO: full name and affiliation (KFRI), ORCID if available
+version: "1.0.0"
+date-released: "2026-10-27"   # TODO: update at release
+license: MIT
+repository-code: "https://github.com/YOUR_ACCOUNT/taste-schnet-film"   # TODO

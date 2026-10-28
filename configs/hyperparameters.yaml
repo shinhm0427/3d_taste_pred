@@ -1,0 +1,40 @@
+# Settings as implemented in code/01_main_training_and_evaluation.ipynb
+model:
+  backbone: SchNet (custom, GlobalAttention pooling)
+  property_conditioning: FiLM (8 PubChem physicochemical properties)
+preprocessing:
+  properties: [MolecularWeight, XLogP, TPSA, HBondDonorCount, HBondAcceptorCount, RotatableBondCount, HeavyAtomCount, Complexity]
+  imputation: median (fit on training folds)
+  filter: drop properties with IQR < 1e-6
+  scaling: RobustScaler
+training:
+  optimizer: AdamW
+  base_lr: 5.0e-4
+  weight_decay: 1.0e-4
+  property_branch: {lr_multiplier: 2.0, weight_decay_multiplier: 0.5, first_epochs: 30}
+  batch_size: 32
+  max_epochs: 300
+  early_stopping: {metric: val macro-F1, patience: 20, min_delta: 1.0e-4}
+  warmup_epochs: {film_fixed_split: 10, film_oof_step_scripts: 30, three_d_only: 30}
+  loss: class-balanced focal loss (beta: 0.999, gamma: 1.5)
+  sampler: WeightedRandomSampler (inverse class frequency, with replacement)
+  hyperparameter_tuning: none
+inference:
+  test_time_augmentation: {passes: 12, coordinate_noise_sigma_angstrom: 0.015, mc_dropout: true, aggregation: mean of logits}
+  validation_tta: {passes: 8, sigma_angstrom: 0.01}
+split:
+  fixed_split: StratifiedGroupKFold, 5 folds, best of 80 candidate assignments, folds 0-2 train / 3 val / 4 test (60:20:20), seed 42
+  grouping: canonical SMILES
+  scaffold_folds: Bemis-Murcko scaffold groups, seed 42
+augmentation:
+  target_class: tasteless (training set only)
+  conformers_per_molecule_max: 3
+  generator: RDKit ETKDG, RMSD prune 0.35 A
+  coordinate_noise_sigma_angstrom: 0.02
+  seed: 0xF00D
+baseline_and_ensemble:
+  morgan_rf: {radius: 2, n_bits: 2048, n_trees: 500, class_weight: balanced}
+  schnet_fp_property: Morgan fingerprint PCA (32 components) + 8 properties -> FiLM
+  ensemble: soft vote, SchNet weight chosen leave-one-fold-out on a 21-point grid
+  fixed_weight_sensitivity: [0.1, 0.25, 0.5]
+  training_seeds: [1, 2, 3, 4, 42]

@@ -1,0 +1,3 @@
+task,initial_records,unparsable_or_unsanitizable,no_taste_label_prop,label_not_in_task_map,conformer_embedding_failed,FINAL_N,unique_canonical_smiles(groups),kept_with_any_missing_property,final_bitterness,final_sweetness,final_tastelessness
+binary,2398,1,0,240,0,2157,2028,973,1181,976,
+triclass,2398,1,0,38,0,2359,2220,1090,1181,976,202.0
